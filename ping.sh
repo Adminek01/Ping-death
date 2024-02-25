@@ -77,10 +77,10 @@ check_errors() {
     fi
 }
 
-# Funkcja do wysyłania pakietów ping
-send_ping() {
-    ping $@ | while read pong; do
-        echo $pong
+# Funkcja do wysyłania wielu pakietów ping o maksymalnej wielkości
+send_big_pings() {
+    for i in {1..40}; do
+        ping $1 -s 65500 &
     done
 }
 
@@ -102,7 +102,7 @@ if ! $multi_ping; then
     fi
 
     # Wyślij ping i wyświetl wyniki w czasie rzeczywistym
-    send_ping $1
+    send_big_pings $1
 
 # Pingowanie wielu hostów
 else
@@ -121,4 +121,5 @@ fi
 # Zapisz wyniki do pliku
 if [ -n "$output_file" ]; then
     ping $1 -c 5 > $output_file
-    echo "Wyniki pingu zostały zapis
+    echo "Wyniki pingu zostały zapisane w pliku: $output_file"
+fi
