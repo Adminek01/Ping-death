@@ -1,125 +1,61 @@
 #!/bin/bash
 
-# Funkcja do wyświetlania pomocy
-show_help() {
-    echo "Skrypt do pingowania hostów"
-    echo "Opcje:"
-    echo "-c: Sprawdź dostępność hosta"
-    echo "-s: Wyświetl szczegółowe statystyki"
-    echo "-f: Dostosuj formatowanie wyników"
-    echo "-h: Wyświetl tę pomoc"
-    echo "-o <plik>: Zapisz wyniki do pliku"
-    echo "-m <liczba>: Pinguj wiele hostów"
-    echo "-t <czas>: Ustaw timeout"
-    echo "-i <interwał>: Ustaw interwał pingowania"
-    echo "-j: Wyświetl wyniki JSON"
-    echo "-v: Wyświetl szczegółowe informacje o błędach"
+# Funkcja do uruchamiania testu Apache Bench
+run_ab_test() {
+    ab -n 1000000 -c 1000 -g ab_results.csv https://zszkurzetnik.mobidziennik.pl/ &
 }
 
-# Sprawdź argumenty
-if [ -z "$1" ] || [[ "$1" == "-h" ]]; then
-    show_help
-    exit 1
-fi
-
-# Zdefiniuj opcje
-check_availability=false
-show_statistics=false
-format=default
-output_file=""
-multi_ping=false
-timeout=0
-interval=1
-json_output=false
-verbose_errors=false
-
-# Przetwórz argumenty
-while getopts "cshfmo:t:i:jv" arg; do
-    case $arg in
-        c) check_availability=true ;;
-        s) show_statistics=true ;;
-        f) format=$arg ;;
-        o) output_file=$OPTARG ;;
-        m) multi_ping=true ;;
-        t) timeout=$OPTARG ;;
-        i) interval=$OPTARG ;;
-        j) json_output=true ;;
-        v) verbose_errors=true ;;
-        *) echo "Nieprawidłowa opcja: -$arg" && exit 1 ;;
-    esac
-done
-
-# Funkcja do sprawdzania błędów
-check_errors() {
-    # Sprawdź, czy podano hosta.
-    if [ -z "$1" ]; then
-        echo "Nie podano hosta." && exit 1
-    fi
-
-    # Sprawdź, czy plik wyjściowy istnieje (jeśli podano).
-    if [ -n "$output_file" ] && [ -f "$output_file" ]; then
-        echo "Plik wyjściowy '$output_file' już istnieje." && exit 1
-    fi
-
-    # Sprawdź, czy podano prawidłowy format (jeśli podano).
-    if [ "$format" != "default" ] && ! grep -q "$format" <<< "csv json"; then
-        echo "Nieprawidłowy format: '$format'." && exit 1
-    fi
-
-    # Sprawdź, czy podano prawidłowy timeout (jeśli podano).
-    if [ "$timeout" -lt 0 ]; then
-        echo "Nieprawidłowy timeout: '$timeout'." && exit 1
-    fi
-
-    # Sprawdź, czy podano prawidłowy interwał (jeśli podano).
-    if [ "$interval" -lt 0 ]; then
-        echo "Nieprawidłowy interwał: '$interval'." && exit 1
-    fi
+# Funkcja do uruchamiania testu ping
+run_ping_test() {
+    ping -f -c 65507 -s 65507 -i 0.001 example.pl &
 }
 
-# Funkcja do wysyłania wielu pakietów ping o maksymalnej wielkości
-send_big_pings() {
-    for i in {1..100}; do
-        ping $1 -s 95500 &
-    done
+# Funkcja do monitorowania wydajności sieciowej
+network_performance_monitor() {
+    echo "Monitorowanie wydajności sieciowej:"
+    echo "----------------------------------"
+    iperf -c zszkurzetnik.mobidziennik.pl
 }
 
-# Pingowanie pojedynczego hosta
-if ! $multi_ping; then
+# Funkcja do sprawdzania dostępności portów
+check_port_availability() {
+    echo "Sprawdzanie dostępności portów:"
+    echo "-------------------------------"
+    nc -zv example.pl 80
+    nc -zv example.pl 443
+}
 
-    # Sprawdź błędy
-    check_errors "$1"
+# Funkcja do analizy logów
+analyze_logs() {
+    echo "Analiza logów:"
+    echo "--------------"
+    # Dodaj tutaj kod do analizy logów, generowania raportów itp.
+}
 
-    # Sprawdź dostępność hosta
-    if $check_availability; then
-        ping -c 1 $1 > /dev/null
-        if [ $? -eq 0 ]; then
-            echo "Host $1 jest dostępny"
-        else
-            echo "Host $1 jest niedostępny"
-            exit 1
-        fi
-    fi
+# Funkcja do testowania prędkości łącza
+speed_test() {
+    echo "Testowanie prędkości łącza:"
+    echo "---------------------------"
+    speedtest-cli --server 1234
+}
 
-    # Wyślij ping i wyświetl wyniki w czasie rzeczywistym
-    send_big_pings $1
+# Uruchomienie testu Apache Bench
+run_ab_test
 
-# Pingowanie wielu hostów
-else
+# Uruchomienie testu ping
+run_ping_test
 
-    # TODO: Dodaj obsługę pingowania wielu hostów
+# Monitorowanie wydajności sieciowej
+network_performance_monitor
 
-    echo "Opcja pingowania wielu hostów jeszcze niezaimplementowana"
+# Sprawdzanie dostępności portów
+check_port_availability
 
-fi
+# Analiza logów
+analyze_logs
 
-# Wyświetlanie statystyk
-if $show_statistics; then
-    ping -c 5 $1 | tail -n 2
-fi
+# Testowanie prędkości łącza
+speed_test
 
-# Zapisz wyniki do pliku
-if [ -n "$output_file" ]; then
-    ping $1 -c 5 > $output_file
-    echo "Wyniki pingu zostały zapisane w pliku: $output_file"
-fi
+# Oczekiwanie na zakończenie wszystkich testów
+wait
