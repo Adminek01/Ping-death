@@ -18,6 +18,12 @@ show_menu() {
     read option
 }
 
+# Funkcja do uruchamiania NoSQLMap
+run_nosqlmap() {
+    echo "Uruchamianie NoSQLMap..."
+    python /ścieżka/do/nosqlmap.py --attack "$1" --platform "$2" --victim "$3" --dbPort "$4" --myIP "$5" --myPort "$6" --webPort "$7" --uri "$8" --httpMethod "$9" --https "${10}" --verb "${11}" --postData "${12}" --requestHeaders "${13}"
+}
+
 # Funkcja do uruchamiania testu Apache Bench
 run_ab_test() {
     echo "Wpisz adres URL strony do testowania:"
