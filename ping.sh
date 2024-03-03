@@ -12,6 +12,7 @@ show_menu() {
     echo "7. Skanowanie podatności (Nmap)"
     echo "8. Atak typu Man-in-the-Middle (Ettercap)"
     echo "9. Atak typu SQL injection (SQLmap)"
+    echo "10. Użycie wszystkich narzędzi na jednym celu"
     echo "0. Wyjście"
     read option
 }
@@ -26,7 +27,7 @@ run_ab_test() {
     read concurrent_connections
     echo "Wybierz format pliku wynikowego (CSV/JSON/HTML):"
     read result_format
-    ab -n $num_requests -c $concurrent_connections -g ab_results.$result_format $url &
+    ab -n "$num_requests" -c "$concurrent_connections" -g "ab_results.$result_format" "$url" &
 }
 
 # Funkcja do uruchamiania testu ping
@@ -39,7 +40,7 @@ run_ping_test() {
     read interval
     echo "Wpisz liczbę powtórzeń:"
     read num_iterations
-    ping -f -c $num_iterations -s $packet_size -i $interval $host &
+    ping -f -c "$num_iterations" -s "$packet_size" -i "$interval" "$host" &
 }
 
 # Funkcja do monitorowania wydajności sieciowej
@@ -50,7 +51,7 @@ network_performance_monitor() {
     read server
     echo "Wpisz parametry transmisji danych (np. -l 1000 -b 10M -t 10s):"
     read transmission_params
-    iperf $transmission_params $server
+    iperf "$transmission_params" "$server"
 }
 
 # Funkcja do sprawdzania dostępności portów
@@ -66,7 +67,7 @@ check_port_availability() {
     for ((port=start_port; port<=end_port; port++))
     do
         echo "Sprawdzanie portu $port:"
-        nc -zv $host $port $protocol
+        nc -zv "$host" "$port" "$protocol"
     done
 }
 
@@ -85,7 +86,7 @@ speed_test() {
     read server_num
     echo "Wybierz jednostkę prędkości (bps/Kbps/Mbps/Gbps):"
     read speed_unit
-    speedtest-cli --server $server_num --unit $speed_unit
+    speedtest-cli --server "$server_num" --unit "$speed_unit"
 }
 
 # Funkcja do skanowania podatności (Nmap)
@@ -95,7 +96,7 @@ vulnerability_scan() {
     echo "Wpisz adres IP lub nazwę hosta do skanowania:"
     read target
     echo "Uruchamianie skanowania..."
-    nmap $target
+    nmap "$target"
 }
 
 # Funkcja do ataku typu Man-in-the-Middle (Ettercap)
@@ -105,7 +106,7 @@ man_in_the_middle_attack() {
     echo "Wpisz adres IP lub nazwę hosta ofiary:"
     read victim
     echo "Uruchamianie ataku..."
-    ettercap -T -q -M arp:remote /$victim/ // &
+    ettercap -T -q -M arp:remote /"$victim"/ // &
 }
 
 # Funkcja do ataku typu SQL injection (SQLmap)
@@ -115,7 +116,27 @@ sql_injection_attack() {
     echo "Wpisz adres URL strony do ataku:"
     read target_url
     echo "Uruchamianie ataku..."
-    sqlmap -u $target_url --dbs
+    sqlmap -u "$target_url" --dbs
+}
+
+# Funkcja do użycia wszystkich narzędzi na jednym celu
+use_all_tools() {
+    echo "Wpisz adres URL strony do testowania:"
+    read url
+    run_ab_test "$url"
+    run_ping_test "$url"
+    network_performance_monitor "$url"
+    check_port_availability "$url"
+    # Tutaj dodaj wywołania pozostałych funkcji z wykorzystaniem tego samego celu
+}
+
+# Funkcja do wyświetlania szczegółowych wyników wszystkich testów w formie tabeli
+display_results_table() {
+    echo "Szczegółowe wyniki wszystkich testów:"
+    echo "-------------------------------------"
+    echo "| Test                 | Wyniki                             |"
+    echo "-------------------------------------"
+    # Tutaj dodaj kod do wyświetlania wyników wszystkich testów w formie tabeli
 }
 
 # Główna pętla programu
@@ -149,7 +170,11 @@ while true; do
     9)
         sql_injection_attack
         ;;
+    10)
+        use_all_tools
+        ;;
     0)
+        display_results_table
         echo "Wyjście z programu..."
         break
         ;;
