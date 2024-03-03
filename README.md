@@ -55,4 +55,4 @@ ettercap -T -q -M arp:remote /example.com/ //
 sqlmap -u "http://example.com/page.php?id=1" --dbs
 ```
 
-.
+. oczywiście jest więcej może musisz się zapoznać z programem .
