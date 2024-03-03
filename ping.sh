@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # Funkcja do wyświetlania menu i pobierania opcji
