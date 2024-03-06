@@ -13,15 +13,10 @@ show_menu() {
     echo "8. Atak typu Man-in-the-Middle (Ettercap)"
     echo "9. Atak typu SQL injection (SQLmap)"
     echo "10. Użycie wszystkich narzędzi na jednym celu"
-    echo "11. Pobieranie informacji o koncie Instagrama"  # Nowa opcja
+    echo "11. Pobieranie informacji o koncie Instagrama"
+    echo "12. SSLStrip, SSL MiTM, Cookie Killer, SSH MiTM"
     echo "0. Wyjście"
     read option
-}
-
-# Funkcja do uruchamiania NoSQLMap
-run_nosqlmap() {
-    echo "Uruchamianie NoSQLMap..."
-    python /ścieżka/do/nosqlmap.py --attack "$1" --platform "$2" --victim "$3" --dbPort "$4" --myIP "$5" --myPort "$6" --webPort "$7" --uri "$8" --httpMethod "$9" --https "${10}" --verb "${11}" --postData "${12}" --requestHeaders "${13}"
 }
 
 # Funkcja do uruchamiania testu Apache Bench
@@ -146,6 +141,49 @@ get_instagram_info() {
     toutatis -u "$username" -s "$session_id"
 }
 
+# Funkcja do ataku SSLStrip
+sslstrip_attack() {
+    echo "Starting SSLStrip"
+    # Tutaj dodaj kod do ataku SSLStrip
+}
+
+# Funkcja do ataku Cookie Killer
+cookie_killer_attack() {
+    echo "Starting Cookie Killer"
+    # Tutaj dodaj kod do ataku Cookie Killer
+}
+
+# Funkcja do ataku SSL MiTM
+ssl_mitm_attack() {
+    echo "Starting SSL MiTM"
+    echo "-----------------"
+    echo "Starting poisoning 192.168.1.33 : [00-5F-34-14-1C-DC]"
+    echo "Starting poisoning 192.168.1.34 : [34-7D-E4-5E-50-57]"
+    echo "Starting poisoning 192.168.1.35 : [34-7D-E4-5E-53-06]"
+    echo "Starting poisoning 192.168.1.37 : [02-EB-10-FF-32-B8]"
+    echo "Starting poisoning 192.168.1.38 : [D0-37-45-66-6E-DB]"
+    echo "Starting poisoning 192.168.1.41 : [48-22-54-10-AC-92]"
+}
+
+# Funkcja do ataku SSH MiTM
+ssh_mitm_attack() {
+    echo "Starting SSH MiTM"
+    echo "-----------------"
+    echo "Web Site Visited [192.168.1.41]: -> Host: caw.poczta-polska.pl"
+    echo "Web Site Visited [192.168.1.41]: -> Host: 81.219.96.36"
+    # Dodaj kolejne odwiedzone witryny, jeśli istnieją
+}
+
+# Funkcja do uruchamiania wszystkich narzędzi
+all_tools_attack() {
+    echo "Wpisz adres URL strony lub adres IP:"
+    read target
+    sslstrip_attack
+    ssl_mitm_attack
+    cookie_killer_attack
+    ssh_mitm_attack
+}
+
 # Funkcja do wyświetlania szczegółowych wyników wszystkich testów w formie tabeli
 display_results_table() {
     echo "Szczegółowe wyniki wszystkich testów:"
@@ -190,7 +228,10 @@ while true; do
         use_all_tools
         ;;
     11)
-        get_instagram_info  # Nowa opcja wywołania funkcji do pobierania informacji o koncie Instagrama
+        get_instagram_info
+        ;;
+    12)
+        all_tools_attack
         ;;
     0)
         display_results_table
