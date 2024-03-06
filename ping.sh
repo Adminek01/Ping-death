@@ -2,7 +2,7 @@
 
 # Funkcja do wyświetlania menu i pobierania opcji
 show_menu() {
-    echo "Wybierz opcję:"
+    echo -e "\e[1;36mWybierz opcję:\e[0m"
     echo "1. Test Apache Bench"
     echo "2. Test ping"
     echo "3. Monitorowanie wydajności sieciowej"
@@ -16,7 +16,7 @@ show_menu() {
     echo "11. Pobieranie informacji o koncie Instagrama"
     echo "12. SSLStrip, SSL MiTM, Cookie Killer, SSH MiTM"
     echo "0. Wyjście"
-    read option
+    read -p "Twój wybór: " option
 }
 
 # Funkcja do uruchamiania testu Apache Bench
